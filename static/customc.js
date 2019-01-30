@@ -15,33 +15,36 @@ function submit_message(message) {
   function handle_response(data) {
     // append the bot repsonse to the div
 
-    if (temp == 0) {
-      $(".chat-message col-md-5 offset-md-7 bot-message").remove();
+    /*if (temp == 0) {
+      $(".chat").remove();
       temp = 1;
-    }
+    }*/
     count++;
 
-    $(".chat-container").append(`
-                <div class="chat-message col-md-5 offset-md-7 bot-message">
-                    ${data.message}
-                </div>
+    $(".chatlogs").append(`
+          <div class="chat">
+                <div class="bot-photo"></div>
+                <div class = "chatbot"> ${data.message}
+            </div>
           `);
     if (count == 2) {
-      $(".chat-container").append(`
-                <div class="chat-message col-md-5 offset-md-7 bot-message">
+      $(".chatlogs").append(`
+                <div class="chat">
+	      		<div class="bot-photo"></div>
+	      		<div class = "chatbot">
                     <html>
 			<head>
 				<title>simple form</title>
 			</head>
 		<body>
-		<form method="GET" action= "http://127.0.0.1:5001/process_post">
-		 name:<input type = "text" name ="name" >
-		Email-ID:<input type = "Email" name ="email_id" >
-		Ph.No:<input type = "number" name = "phone_no">
+		<form method="GET" action= "http://127.0.0.1:5001/process_post"><br>
+		 name:<input type = "text" name ="name" ><br>
+		Email-ID:<input type = "Email" name ="email_id" ><br>
+		Ph.No:<input type = "number" name = "phone_no"><br>
 		<input type = "submit" name = "submit">
 		</body>
 		</html>
-
+		</div>
                 </div>
           `);
     }
@@ -50,7 +53,10 @@ function submit_message(message) {
   }
 }
 //printing the input messages on the chat UI
-$("#target").on("submit", function(e) {
+$(document).ready(function(){
+
+$("#target").on("click", function(e) {
+  console.log("entered")
   e.preventDefault();
   const input_message = $("#input_message").val();
   // return if the user does not enter any text
@@ -58,22 +64,30 @@ $("#target").on("submit", function(e) {
     return;
   }
 
-  $(".chat-container").append(`
-            <div class="chat-message col-md-5 human-message">
+  $(".chatlogs").append(`
+    <div class="chat">
+        <div class="user-photo"></div>
+            <div class = "chatuser"> 
                 ${input_message}
             </div>
+        </div>
         `);
 
   // loading
-  $(".chat-container").append(`
-            <div class="chat-message text-center col-md-2 offset-md-10 bot-message" id="loading">
-		<b>...</b>
+  $(".chatlogs").append(`
+    
+        <div class="chat" id = "loading">
+            <div class="bot-photo"></div>
+                <div class = "chatbot"> 
+                    <b>...</b>
+                </div>
 		</div>
         `);
 
   // clear the text input
   $("#input_message").val("");
 
-  // send the message
+  // send thie message
   submit_message(input_message);
+})
 });
