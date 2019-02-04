@@ -19,12 +19,14 @@ function submit_message(message) {
       $(".chat").remove();
       temp = 1;
     }*/
+    console.log("hello world");
+    console.log(data);
     count++;
 
     $(".chatlogs").append(`
           <div class="chat">
                 <div class="bot-photo"></div>
-                <div class = "chatbot"> ${data.message}
+                <div class = "chatbot"> ${data}
             </div>
           `);
     if (count == 2) {
@@ -38,7 +40,7 @@ function submit_message(message) {
 			</head>
 		<body>
 		<form method="GET" action= "http://127.0.0.1:5001/process_post"><br>
-		 name:<input type = "text" name ="name" ><br>
+		Name:<input type = "text" name ="name" ><br>
 		Email-ID:<input type = "Email" name ="email_id" ><br>
 		Ph.No:<input type = "number" name = "phone_no"><br>
 		<input type = "submit" name = "submit">
@@ -53,18 +55,17 @@ function submit_message(message) {
   }
 }
 //printing the input messages on the chat UI
-$(document).ready(function(){
+$(document).ready(function() {
+  $("#target").on("submit", function(e) {
+    console.log("entered");
+    e.preventDefault();
+    const input_message = $("#input_message").val();
+    // return if the user does not enter any text
+    if (!input_message) {
+      return;
+    }
 
-$("#target").on("click", function(e) {
-  console.log("entered")
-  e.preventDefault();
-  const input_message = $("#input_message").val();
-  // return if the user does not enter any text
-  if (!input_message) {
-    return;
-  }
-
-  $(".chatlogs").append(`
+    $(".chatlogs").append(`
     <div class="chat">
         <div class="user-photo"></div>
             <div class = "chatuser"> 
@@ -73,8 +74,8 @@ $("#target").on("click", function(e) {
         </div>
         `);
 
-  // loading
-  $(".chatlogs").append(`
+    // loading
+    $(".chatlogs").append(`
     
         <div class="chat" id = "loading">
             <div class="bot-photo"></div>
@@ -84,10 +85,10 @@ $("#target").on("click", function(e) {
 		</div>
         `);
 
-  // clear the text input
-  $("#input_message").val("");
+    // clear the text input
+    $("#input_message").val("");
 
-  // send thie message
-  submit_message(input_message);
-})
+    // send thie message
+    submit_message(input_message);
+  });
 });

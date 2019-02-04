@@ -85,7 +85,7 @@ body {
   align-items: flex-start;
   display: flex;
 }
-.chat-form textarea {
+.chat-form input {
   background: #f6f8f5;
   width: 75%;
   height: 50px;
@@ -95,18 +95,18 @@ body {
   padding: 10px;
   font-size: 18px;
 }
-.chat-form textarea:hover {
+.chat-form input:hover {
   background: #ccc9c954;
 }
 
-.chat-form textarea::-webkit-scrollbar {
+.chat-form form::-webkit-scrollbar {
   width: 10px;
 }
-.chat-form textarea::-webkit-scrollbar-thumb {
+.chat-form form::-webkit-scrollbar-thumb {
   border-radius: 20px;
   background: rgba(0, 0, 0, 0.1);
 }
-.chat-form button {
+.chat-form button  {
   background: #3fe715;
   padding: 5px 10px;
   font-size: 25px;
