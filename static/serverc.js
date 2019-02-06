@@ -18,26 +18,23 @@ var pool = mysql.createPool({
 var app = express();
 var urlencodedparser = bodyparser.urlencoded({ extended: false });
 
-  const sessionId = uuid.v4();
-  console.log("loaded the uuuid package");
+const sessionId = uuid.v4();
+console.log("loaded the uuuid package");
 
-  // Create a new session
-  const sessionClient = new dialogflow.SessionsClient();
-  console.log("session client created");
-  const sessionPath = sessionClient.sessionPath("global-bot", sessionId);
-  console.log("session path is created");
+// Create a new session
+const sessionClient = new dialogflow.SessionsClient();
+console.log("session client created");
+const sessionPath = sessionClient.sessionPath("global-bot", sessionId);
+console.log("session path is created");
 //used for rendering chatui page and static pages
-app.use(express.static("."));
 
-function handler(error,result)
-{
-	if(!error)
-	{
-		return result;
-	}
+function handler(error, result) {
+  if (!error) {
+    return result;
+  }
 }
 //call to get the response from the bot.
-async function runSample(message){
+async function runSample(message) {
   // A unique identifier for the given session
 
   // The text query request.
@@ -55,7 +52,7 @@ async function runSample(message){
 
   // Send request and log result
   const responses = await sessionClient.detectIntent(request);
-  console.log("Detected intent");
+
   const result = responses[0].queryResult;
   console.log(`  Query: ${result.queryText}`);
   console.log(`  Response: ${result.fulfillmentText}`);
@@ -67,20 +64,21 @@ async function runSample(message){
   }
 }
 
-app.get("/simpleuicopy.html", function(req, res) {
+app.get("/", function(req, res) {
   res.sendFile(__dirname + "/" + "simpleuicopy.html");
 });
-app.get("/", function(req, res) {
-  res.send("helloworld");
-});
-app.post("/send_message", urlencodedparser, function(req, res) {
- runSample( req.body.message).then(function func(data){
-	 
-	console.log(JSON.stringify({message:data.fulfillmentText}));
-	res.send(data.fulfillmentText);
 
- }) ;
+app.use(express.static("."));
+app.post("/send_message", urlencodedparser, function(req, res) {
+  runSample(req.body.message).then(function func(data) {
+    console.log(JSON.stringify({ message: data.fulfillmentText }));
+    res.send(data.fulfillmentText);
+  });
   //console.log("inside the send message:"+response.fulfillmentText);
+});
+
+app.get("/pop-up.html", function(req, res) {
+  res.sendFile(__dirname + "/" + "pop-up.html");
 });
 //get request to process_post
 app.get("/process_post", function(req, res) {
@@ -103,22 +101,12 @@ app.get("/process_post", function(req, res) {
         connection.release();
         if (err) {
           throw err;
+        } else {
+          res.status(204).send();
         }
-	else
-	{
-		res.status(204).send();
-	}
-		      
       }
     );
   });
-
-  console.log(
-    "the details received are name=%s and email_id = %s and phone_no = %s",
-    req.query.name,
-    req.query.first_name,
-    req.query.second_name
-  );
 });
 //server listening at 5001
 var server = app.listen(5001, function(req, res) {

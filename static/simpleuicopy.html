@@ -1,25 +1,39 @@
 <html>
     <head>
         <title>Global BiBot</title>
-	    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
-        <link rel="stylesheet" type="text/css" href="/stylecopy.css">
-
+        <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+        <link rel="stylesheet" type="text/css" href="stylecopy.css">
     </head>
     <body>
-        <div class = "chatbox">
+        <script>
+            function open_bot()
+            {
+                console.log(223123);
+                document.getElementById("open").style.display = "block";
+            }
+            function close_bot()
+            {
+                document.getElementById("open").style.display = "none";
+            }
+        </script>
+        <button type="button" class = "open-button" onclick="open_bot()" >Chat</button>
+        <div class ="chatbox" id = "open" style="display:none;">
+            <div class = chat-header><h1>BiBot</h1></div>
             <div class="chatlogs">
                 <div class="chat">
-                    <div class="bot-photo"></div>
+                    <div class="bot-photo"><img src="bot.png"></div>
                     <div class = "chatbot"> Hi I am Bibot How can i help you</div>
                 </div>
             </div>
-            	<div class = "chat-form">
-			<form id = "target" method = "GET">
-				<input type="textarea" placeholder = "Enter message" id="input_message"/>
-				<button type="submit" value ="submit">Send</button>
-        		</form>
-		</div>
-	</div>
-        <script src="/customc.js"></script>
+            <div class = "chat-form">
+			    <form class = "chat-form" id = "target">
+				    <input type="textarea" placeholder = "Enter message" id="input_message"/>
+				    <button type="submit" value ="submit">Send</button>
+        	    </form>
+            </div>
+            <button class = "open-button" onclick="close_bot()">close</button>
+       </div>
+       <script src=/customc.js></script>
+       
     </body>
 </html>

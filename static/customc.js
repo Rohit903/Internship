@@ -9,6 +9,7 @@
 })*/
 var temp = 0;
 var count = 0;
+
 function submit_message(message) {
   $.post("/send_message", { message: message }, handle_response);
 
@@ -25,7 +26,7 @@ function submit_message(message) {
 
     $(".chatlogs").append(`
           <div class="chat">
-                <div class="bot-photo"></div>
+                <div class="bot-photo"><img src="bot.png"></div>
                 <div class = "chatbot"> ${data}
             </div>
           `);
@@ -34,16 +35,17 @@ function submit_message(message) {
                 <div class="chat">
 	      		<div class="bot-photo"></div>
 	      		<div class = "chatbot">
-                    <html>
+            <html>
 			<head>
 				<title>simple form</title>
 			</head>
 		<body>
-		<form method="GET" action= "http://127.0.0.1:5001/process_post"><br>
-		Name:<input type = "text" name ="name" ><br>
-		Email-ID:<input type = "Email" name ="email_id" ><br>
+		<form method="GET" action= "http://127.0.0.1:5001/process_post">
+		Name :<input type = "text" name ="name" ><br>
+		Email:<input type = "Email" name ="email_id" ><br>
 		Ph.No:<input type = "number" name = "phone_no"><br>
-		<input type = "submit" name = "submit">
+        <button type = "submit" value = "submit">Send</button>
+        </form>
 		</body>
 		</html>
 		</div>
@@ -67,7 +69,7 @@ $(document).ready(function() {
 
     $(".chatlogs").append(`
     <div class="chat">
-        <div class="user-photo"></div>
+        <div class="user-photo"><img src="user.png"></div>
             <div class = "chatuser"> 
                 ${input_message}
             </div>
@@ -78,7 +80,7 @@ $(document).ready(function() {
     $(".chatlogs").append(`
     
         <div class="chat" id = "loading">
-            <div class="bot-photo"></div>
+            <div class="bot-photo"><img src="bot.png"></div>
                 <div class = "chatbot"> 
                     <b>...</b>
                 </div>

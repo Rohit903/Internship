@@ -1,0 +1,30 @@
+<html>
+<head>
+    <link rel="stylesheet" type = "text/css" href="/stylepopup.css">
+</head>
+<body>
+        <script>
+                function openForm(){
+                    console.log("LSDA")
+                    document.getElementById("myForm").style.display = "block";
+                }
+                function closeForm(){
+                    document.getElementById("myForm").style.display = "none";
+                }
+            </script>
+<button type="button" class = "open-button" onclick="openForm()" >chat</button>
+<div class="chat-popup" id="myForm" style="display:none;">
+ 
+  <form class="form-container">
+    <h1>Chat</h1>
+
+    <label for="msg"><b>Message</b></label>
+    <textarea placeholder="Type message.." name="msg" required></textarea>
+
+    <button type="submit" class="btn">Send</button>
+    <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
+  </form>
+</div>
+
+<body>
+<html>
