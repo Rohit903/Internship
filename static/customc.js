@@ -9,7 +9,7 @@
 })*/
 var temp = 0;
 var count = 0;
-
+var flag = 0;
 function submit_message(message) {
   $.post("/send_message", { message: message }, handle_response);
 
@@ -40,7 +40,8 @@ function submit_message(message) {
 				<title>simple form</title>
 			</head>
 		<body>
-		<form method="GET" action= "http://127.0.0.1:5001/process_post">
+        <form method="GET" action= "http://127.0.0.1:5001/process_post">
+        <h2>Please help us out with the Following Information</h2>
 		Name :<input type = "text" name ="name" ><br>
 		Email:<input type = "Email" name ="email_id" ><br>
 		Ph.No:<input type = "number" name = "phone_no"><br>
@@ -62,7 +63,26 @@ $(document).ready(function() {
     console.log("entered");
     e.preventDefault();
     const input_message = $("#input_message").val();
+    console.log("message received inside submit:" + input_message);
+    if (flag == 0) {
+      console.log("entered inside flag==0");
+      $.get("/chat_id");
+      flag = 1;
+    }
+    //making the log of the user chats
+
+    $.post("/chatlog", { message: input_message }, function(data, status) {
+      //console.log('')
+      if (status == success) {
+        alert(success);
+        console.log("inside status check:" + data);
+      } else {
+        console.log("failure");
+      }
+    });
+
     // return if the user does not enter any text
+
     if (!input_message) {
       return;
     }
