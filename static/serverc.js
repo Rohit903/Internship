@@ -7,7 +7,7 @@ var bodyparser = require("body-parser");
 var process = require("process");
 
 var pool = mysql.createPool({
-  connectionLimit: 10,
+  connectionLimit: 2,
   host: "localhost",
   user: "rohit",
   password: "rohit@903",
@@ -37,7 +37,74 @@ function handler(error, result) {
     return result;
   }
 }
-async function chatidhandler() {}
+
+//async function for chat_id generation and updating for global variable
+function chat_Id() {
+  console.log("entered chat_id");
+  return new Promise((resolve, request) => {
+    pool.getConnection(function(err, connection) {
+      if (err) {
+        connection.release();
+        console.log("error occured");
+        return;
+      }
+      console.log("connected as id inside chat_id" + connection.threadId);
+
+      console.log("just before connection query");
+
+      connection.query("insert into chat values();", function(err, results) {
+        if (err) {
+          throw err;
+        } else {
+          //s = 1
+          chat_id = results.insertId;
+          console.log("row id:" + chat_id);
+          resolve();
+          //return results;
+        }
+      });
+
+      console.log("after chat_id insert query");
+    });
+  });
+}
+
+//asyn function for logging the chats
+function chatlogs(req, res, urlencodedparser) {
+  return new Promise((resolve, request) => {
+    pool.getConnection(function(err, connection) {
+      console.log("entered chatlog");
+      if (err) {
+        connection.release();
+        //res.json({"code" : 100, "status" : "Error in connection database"})
+        return;
+      }
+
+      console.log("connected as id inside chat_log:" + connection.threadId);
+      console.log("text message:" + req.body.message);
+      console.log("chat_id----: " + chat_id);
+      console.log("before the chat line query");
+      connection.query(
+        'insert into chat_line(chat_id,line_text) values("' +
+          chat_id +
+          '","' +
+          req.body.message +
+          '")',
+        function(err, rows, fields) {
+          connection.release();
+          if (err) {
+            throw err;
+          } else {
+            resolve();
+            console.log("query done");
+          }
+        }
+      );
+      console.log("after the chatline query");
+    });
+  });
+}
+
 //call to get the response from the bot.
 async function runSample(message) {
   // A unique identifier for the given session
@@ -67,6 +134,7 @@ async function runSample(message) {
     console.log(`  No intent matched.`);
   }
 }
+
 //serving the first page
 app.get("/", function(req, res) {
   res.sendFile(__dirname + "/" + "simpleuicopy.html");
@@ -82,62 +150,45 @@ app.post("/send_message", urlencodedparser, function(req, res) {
   });
   //console.log("inside the send message:"+response.fulfillmentText);
 });
+
 //Generating the chat_id for chat table to keep tabs of the number of chats happened.
-app.get("/chat_id", function(req, res) {
-  pool.getConnection(function(err, connection) {
-    if (err) {
-      connection.release();
-      console.log("error occured");
-      return;
-    }
-    connection.query("insert into chat values();", function(
-      err,
-      results,
-      fields
-    ) {
-      if (err) {
-        throw err;
-      } else {
-        //s = 1
-        chat_id = results.insertId;
-        console.log("row id:" + chat_id);
-        res.status(204).send();
-      }
+/*app.get("/chat_id", async function(req, res, next) {
+  try {
+    await chat_Id().then(data => {
+      chat_id = data;
+      console.log("caht_id inside chat_id try catch:", chat_id);
     });
-  });
+  } catch (e) {
+    next(e);
+  }
+  //.then(() => {
+  //  console.log("helloworld");
+  //  });
+  //let resu1 = await chat_Id();
+  //console.log("result inside chat id get :" + resu);
+  //console.log("result inside second resu1 of get method of chat_id:", resu1);
+  //console.log("result afte asunc inside get method of chat_id:", result);
+  res.status(204).send();
+});*/
+
+console.log("chat_id:" + chat_id);
+
+//request for logging the chats using post request
+app.post("/chatlog", urlencodedparser, async function(req, res) {
+  try {
+    chatlogs(req, res, urlencodedparser);
+  } catch (e) {
+    console.log(e);
+  }
+  res.status(204).send();
 });
 
-//request for logging the chats
-console.log("chat_id:" + chat_id);
-app.post("/chatlog", urlencodedparser, function(req, res) {
-  pool.getConnection(function(err, connection) {
-    console.log("entered chatlog");
-    if (err) {
-      connection.release();
-      //res.json({"code" : 100, "status" : "Error in connection database"})
-      return;
-    }
-    console.log("connected as id" + connection.threadId);
-    console.log("text message:" + req.body.message);
-    console.log("chat_id----: " + chat_id);
+//one time request for generating id and inserting message
 
-    connection.query(
-      'insert into chat_line(chat_id,line_text) values("' +
-        chat_id +
-        '","' +
-        req.body.message +
-        '")',
-      function(err, rows, fields) {
-        connection.release();
-        if (err) {
-          throw err;
-        } else {
-          console.log("query done");
-          res.status(204).send();
-        }
-      }
-    );
-  });
+app.post("/chat", urlencodedparser, async function(req, res) {
+  console.log("entered inside new post request");
+  await chat_Id();
+  await chatlogs(req, res, urlencodedparser);
 });
 app.get("/pop-up.html", function(req, res) {
   res.sendFile(__dirname + "/" + "pop-up.html");

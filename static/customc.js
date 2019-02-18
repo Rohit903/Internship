@@ -66,20 +66,24 @@ $(document).ready(function() {
     console.log("message received inside submit:" + input_message);
     if (flag == 0) {
       console.log("entered inside flag==0");
-      $.get("/chat_id");
+      $.post("/chat", { message: input_message }, function(data, status) {
+        console.log(data);
+      });
       flag = 1;
     }
     //making the log of the user chats
 
-    $.post("/chatlog", { message: input_message }, function(data, status) {
-      //console.log('')
-      if (status == success) {
-        alert(success);
-        console.log("inside status check:" + data);
-      } else {
-        console.log("failure");
-      }
-    });
+    if (flag == 0) {
+      $.post("/chatlog", { message: input_message }, function(data, status) {
+        //console.log('')
+        if (status == success) {
+          alert(success);
+          console.log("inside status check:" + data);
+        } else {
+          console.log("failure");
+        }
+      });
+    }
 
     // return if the user does not enter any text
 
