@@ -7,7 +7,7 @@ var bodyparser = require("body-parser");
 var process = require("process");
 
 var pool = mysql.createPool({
-  connectionLimit: 2,
+  connectionLimit: 100,
   host: "localhost",
   user: "rohit",
   password: "rohit@903",
@@ -18,18 +18,16 @@ var pool = mysql.createPool({
 
 var app = express();
 var urlencodedparser = bodyparser.urlencoded({ extended: false });
-var messageval = bodyparser.urlencoded({ extended: false });
-var flag = 0;
 var chat_id = 1;
 
 const sessionId = uuid.v4();
-console.log("loaded the uuuid package");
+//console.log("loaded the uuuid package");
 
 // Create a new session
 const sessionClient = new dialogflow.SessionsClient();
-console.log("session client created");
+//console.log("session client created");
 const sessionPath = sessionClient.sessionPath("global-bot", sessionId);
-console.log("session path is created");
+//console.log("session path is created");
 //used for rendering chatui page and static pages
 
 function handler(error, result) {
@@ -40,17 +38,17 @@ function handler(error, result) {
 
 //async function for chat_id generation and updating for global variable
 function chat_Id() {
-  console.log("entered chat_id");
+  //console.log("entered chat_id");
   return new Promise((resolve, request) => {
     pool.getConnection(function(err, connection) {
       if (err) {
         connection.release();
-        console.log("error occured");
+        //   console.log("error occured");
         return;
       }
       console.log("connected as id inside chat_id" + connection.threadId);
 
-      console.log("just before connection query");
+      //console.log("just before connection query");
 
       connection.query("insert into chat values();", function(err, results) {
         if (err) {
@@ -58,13 +56,13 @@ function chat_Id() {
         } else {
           //s = 1
           chat_id = results.insertId;
-          console.log("row id:" + chat_id);
+          //console.log("row id:" + chat_id);
           resolve();
           //return results;
         }
       });
 
-      console.log("after chat_id insert query");
+      //console.log("after chat_id insert query");
     });
   });
 }
@@ -73,17 +71,16 @@ function chat_Id() {
 function chatlogs(req, res, urlencodedparser) {
   return new Promise((resolve, request) => {
     pool.getConnection(function(err, connection) {
-      console.log("entered chatlog");
+      //console.log("entered chatlog");
       if (err) {
         connection.release();
-        //res.json({"code" : 100, "status" : "Error in connection database"})
         return;
       }
 
-      console.log("connected as id inside chat_log:" + connection.threadId);
-      console.log("text message:" + req.body.message);
-      console.log("chat_id----: " + chat_id);
-      console.log("before the chat line query");
+      //console.log("connected as id inside chat_log:" + connection.threadId);
+      //console.log("text message:" + req.body.message);
+      //console.log("chat_id----: " + chat_id);
+      //console.log("before the chat line query");
       connection.query(
         'insert into chat_line(chat_id,line_text) values("' +
           chat_id +
@@ -96,11 +93,11 @@ function chatlogs(req, res, urlencodedparser) {
             throw err;
           } else {
             resolve();
-            console.log("query done");
+            //console.log("query done");
           }
         }
       );
-      console.log("after the chatline query");
+      //console.log("after the chatline query");
     });
   });
 }
@@ -125,8 +122,8 @@ async function runSample(message) {
   const responses = await sessionClient.detectIntent(request);
 
   const result = responses[0].queryResult;
-  console.log(`  Query: ${result.queryText}`);
-  console.log(`  Response: ${result.fulfillmentText}`);
+  //console.log(`  Query: ${result.queryText}`);
+  //console.log(`  Response: ${result.fulfillmentText}`);
   return result;
   if (result.intent) {
     console.log(`  Intent: ${result.intent.displayName}`);
@@ -144,41 +141,25 @@ app.use(express.static("."));
 
 //getting the response from the dialogflow agent for the given query
 app.post("/send_message", urlencodedparser, function(req, res) {
-  runSample(req.body.message).then(function func(data) {
-    console.log(JSON.stringify({ message: data.fulfillmentText }));
-    res.send(data.fulfillmentText);
-  });
+  try {
+    runSample(req.body.message).then(function func(data) {
+      //console.log(JSON.stringify({ message: data.fulfillmentText }));
+      res.send(data.fulfillmentText);
+    });
+  } catch (e) {
+    //console.log(e);
+  }
   //console.log("inside the send message:"+response.fulfillmentText);
 });
 
-//Generating the chat_id for chat table to keep tabs of the number of chats happened.
-/*app.get("/chat_id", async function(req, res, next) {
-  try {
-    await chat_Id().then(data => {
-      chat_id = data;
-      console.log("caht_id inside chat_id try catch:", chat_id);
-    });
-  } catch (e) {
-    next(e);
-  }
-  //.then(() => {
-  //  console.log("helloworld");
-  //  });
-  //let resu1 = await chat_Id();
-  //console.log("result inside chat id get :" + resu);
-  //console.log("result inside second resu1 of get method of chat_id:", resu1);
-  //console.log("result afte asunc inside get method of chat_id:", result);
-  res.status(204).send();
-});*/
-
-console.log("chat_id:" + chat_id);
+//console.log("chat_id:" + chat_id);
 
 //request for logging the chats using post request
 app.post("/chatlog", urlencodedparser, async function(req, res) {
   try {
     chatlogs(req, res, urlencodedparser);
   } catch (e) {
-    console.log(e);
+    //console.log(e);
   }
   res.status(204).send();
 });
@@ -187,15 +168,17 @@ app.post("/chatlog", urlencodedparser, async function(req, res) {
 
 app.post("/chat", urlencodedparser, async function(req, res) {
   console.log("entered inside new post request");
-  await chat_Id();
-  await chatlogs(req, res, urlencodedparser);
+  try {
+    await chat_Id();
+    await chatlogs(req, res, urlencodedparser);
+  } catch (e) {
+    //console.log(e);
+  }
 });
-app.get("/pop-up.html", function(req, res) {
-  res.sendFile(__dirname + "/" + "pop-up.html");
-});
+
 //get request to process_post
 
-app.get("/process_post", function(req, res) {
+app.post("/process_post", urlencodedparser, function(req, res) {
   pool.getConnection(function(err, connection) {
     if (err) {
       connection.release();
@@ -207,21 +190,21 @@ app.get("/process_post", function(req, res) {
       "chat_id:" +
         chat_id +
         "email_id:" +
-        req.query.email_id +
+        req.body.email_id +
         "name:" +
-        req.query.name +
+        req.body.name +
         "phone:" +
-        req.query.phone_no
+        req.body.phone_no
     );
     connection.query(
       'insert into details(chat_id,Email,name,ph_no) values("' +
         chat_id +
         '","' +
-        req.query.email_id +
+        req.body.email_id +
         '","' +
-        req.query.name +
+        req.body.name +
         '","' +
-        req.query.phone_no +
+        req.body.phone_no +
         '")',
       function(err, rows, fields) {
         connection.release();

@@ -1,7 +1,7 @@
 <html>
     <head>
         <title>Global BiBot</title>
-        <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+        <script src="/jquery.js"></script>
         <link rel="stylesheet" type="text/css" href="stylecopy.css">
     </head>
     <body>
@@ -15,6 +15,11 @@
             {
                 document.getElementById("open").style.display = "none";
             }
+           /* $(document).ready(function(){
+                $("#target").on("submit",function(){
+                 $("chatlogs").scrollTop(100);
+                });
+              });*/
         </script>
         <button type="button" class = "open-button" onclick="open_bot()" >Chat</button>
         <div class ="chatbox" id = "open" style="display:none;">

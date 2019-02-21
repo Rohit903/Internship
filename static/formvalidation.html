@@ -1,0 +1,36 @@
+<html>
+	<head>
+		<title>simple form</title>
+	</head>
+      <body>
+          <script>
+              function validate()
+              {
+                 /* var number = document.getElementById("nu").value;
+                  var len = number.toString().length;
+                  if(len < 10 || len > 10)
+                  {
+                      document.getElementById("nummes").innerHTML = "please enter the valid phone number";
+                      return false;
+                  }
+                  else
+                  {
+                    
+                        document.getElementById("sub").disabled =  true;
+                        return true;
+                  }*/
+                  document.getElementById("sub").disabled =  true;
+                  return true;
+              }
+          </script>
+        <form id = "thank" method="POST" onsubmit= "return validate()">
+            <h2>Please help us out with the Following Information</h2>
+            Name :<input type = "text" name ="name" required autocomplete = off /><br>
+            Email:<input type = "email" id = "em" name ="email_id" required  autocomplete = off/><br>
+            <span id="emmes"></span>
+            Ph.No:<input type = "tel" id="nu" pattern ="[0-9]{10,10}" name = "phone_no" required autocomplete = off><br/>
+            <span id="nummes"></span>
+            <button type = "submit" id="sub" value = "submit">Send</button>
+        </form>
+    </body>
+</html>
